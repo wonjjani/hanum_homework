@@ -215,8 +215,8 @@ def delete_post(post_id):
     
 ######### DELETE  /posts/{postId}/comments/{commentId}
 ######### 댓글을 지웁니다.
-##### 해당 코드도 posts와 중복되오니 /decposts/ 로 수정하겠습니다.
-@app.route('/posts/<int:post_id>/comments/<int:comment_id>', methods=('GET', 'DELETE'))
+##### 해당 코드도 posts와 중복되오니 /delposts/ 로 수정하겠습니다.
+@app.route('/delposts/<int:post_id>/comments/<int:comment_id>', methods=('GET', 'DELETE'))
 def delete_comment(post_id, comment_id):
 
     ## password 와 post_id, comment_id를 받은 후 게시글을 가져옵니다.
