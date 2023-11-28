@@ -8,7 +8,7 @@ app = Flask(__name__)
 db = pymysql.connect(host="localhost", user="root", passwd="8947", db="posts_postid", charset="utf8")
 cur = db.cursor()
 
-dfdgfggg
+
 ######### GET  /posts
 ######### 모든 게시글을 가져옵니다. 
 
