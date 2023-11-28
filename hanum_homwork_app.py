@@ -56,7 +56,7 @@ def posts():
                 'id': row[0], 
                 'author': row[2], 
                 'comments': comment_count, 
-                'uploadAt': row[5].strftime("%Y-%m-%d %H:%M:%S") if row[5] else None
+                'uploadAt': row[5].strftime("%Y-%m-%dT%H:%M:%S.%fZ") if row[5] else None
             }
 
             ## post_data 의 값을 response_data 의 posts 로 전달합니다.
@@ -97,7 +97,7 @@ def get_post(postId):
                     "id": comment[0],
                     "author": comment[1],
                     "content": comment[2],
-                    "uploadedAt": comment[3].strftime("%Y-%m-%d %H:%M:%S") if comment[3] else None
+                    "uploadedAt": comment[3].strftime("%Y-%m-%dT%H:%M:%S.%fZ") if comment[3] else None
                 }
                 comment_list.append(comment_data)
         else:
@@ -110,7 +110,7 @@ def get_post(postId):
                     'author': post[2], 
                     'content': post[3], 
                     'comments': comment_list, 
-                    'uploadedAt': post[5].strftime("%Y-%m-%d %H:%M:%S") if post[5] else None
+                    'uploadedAt': post[5].strftime("%Y-%m-%dT%H:%M:%S.%fZ") if post[5] else None
                     }
         }
         return jsonify(response_data)
