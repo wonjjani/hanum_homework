@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect, url_for
 import pymysql
 import math
 
@@ -34,18 +34,40 @@ def posts():
     
     # 데이터의 총 개수를 페이지당 표시되는 항목의 수로 나누어서 전체 페이지의 수를 계산합니다.
     page_count = math.ceil(data_count[0][0] / limit)
-    
 
+    ## 기본 response 값입니다.
     response_data = {
         "pageCount": page_count,
-        "posts": [{'title': row[1], 
-                   'id': row[0], 
-                   'author': row[2], 
-                   'comments': row[3], 
-                   'uploadAt': row[4]
-                   } for row in data_list]
-    }
+        "posts": []
+        }
+    
+    ## 현재 페이지가 전체 페이지를 넘어갈 경우 error 를 반환합니다.
+    if page <= page_count:
+        for row in data_list:
+            
+            ## 댓글의 수를 불러옵니다. 
+            sql_comment = "SELECT COUNT(*) FROM comments WHERE post_id = %s"
+            cur.execute(sql_comment, (row[0], ))
+            comment_count = cur.fetchone()[0]
+
+            ## post response 입니다.
+            post_data = {
+                'title': row[1], 
+                'id': row[0], 
+                'author': row[2], 
+                'comments': comment_count, 
+                'uploadAt': row[5].strftime("%Y-%m-%d %H:%M:%S") if row[5] else None
+            }
+
+            ## post_data 의 값을 response_data 의 posts 로 전달합니다.
+            response_data["posts"].append(post_data)
+    else:
+        ## page가 page_count 를 넘어갈 경우 반환합니다.
+        response_data = {
+            "error": "No posts"
+        }
     return jsonify(response_data)
+
 
 ######### GET  /posts/{postId}
 ######### 게시글 내용을 가져옵니다.
@@ -66,16 +88,20 @@ def get_post(postId):
         cur.execute(sql, (postId,))
         comments = cur.fetchall()
 
-        ## comments에 있는 모든 댓글들을 json 형태로 comment_list 안에 저장합니다.
-        comment_list = []
-        for comment in comments:
-            comment_data = {
-                "id": comment[0],
-                "author": comment[1],
-                "content": comment[2],
-                "uploadedAt": comment[3].strftime("%Y-%m-%d %H:%M:%S") if comment[3] else None
-            }
-            comment_list.append(comment_data)
+        comment_list = [] # comment 값 저장
+        ## 댓글이 존재하는지 확인합니다.
+        if comments:
+            ## comments에 있는 모든 댓글들을 json 형태로 comment_list 안에 저장합니다.
+            for comment in comments:
+                comment_data = {
+                    "id": comment[0],
+                    "author": comment[1],
+                    "content": comment[2],
+                    "uploadedAt": comment[3].strftime("%Y-%m-%d %H:%M:%S") if comment[3] else None
+                }
+                comment_list.append(comment_data)
+        else:
+            comment_list.append("No comments")
 
         ## comment_list와 post의 내용을 토대로 최종 response_data를 작성합니다.
         response_data = {
@@ -88,8 +114,9 @@ def get_post(postId):
                     }
         }
         return jsonify(response_data)
-    else:   ## 게시글이 없을경우
-        return jsonify("NONE")
+    
+    else:   ## 게시글이 없을경우 /posts로 전환해줍니다.
+        return redirect(url_for('posts'))
     
 ######### POST  /posts
 ######### 게시글을 올립니다. 
@@ -148,7 +175,7 @@ def create_comment(postId):
 
 ######### DELETE  /posts/{postId}
 ######### 게시글을 지웁니다.
-###### GET /posts 와 중복되어 작동이 안되므로 /posts/{postId}를 /delposts/{postId}로 수정하였습니다.
+###### GET /posts와 중복되어 작동이 안되므로 /posts/{postId}를 /delposts/{postId}로 수정하였습니다.
 ###### 원본 파일을 보시면 /posts/ 로 되어있습니다.
 @app.route('/delposts/<int:post_id>', methods=('GET', 'DELETE'))
 def delete_post(post_id):
