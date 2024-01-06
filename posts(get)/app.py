@@ -3,7 +3,7 @@ import pymysql
 import math
 
 app = Flask(__name__)
-db = pymysql.connect(host="localhost", user="root", passwd="8947", db="post1", charset="utf8")
+db = pymysql.connect(host="localhost", user="root", passwd="", db="post1", charset="utf8")
 
 cur = db.cursor()
 
