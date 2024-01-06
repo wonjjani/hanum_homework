@@ -5,7 +5,7 @@ import math
 app = Flask(__name__)
 
 ## DATA BASE를 불러와줍니다.
-db = pymysql.connect(host="localhost", user="root", passwd="8947", db="posts_postid", charset="utf8")
+db = pymysql.connect(host="localhost", user="root", passwd="", db="posts_postid", charset="utf8")
 cur = db.cursor()
 
 
