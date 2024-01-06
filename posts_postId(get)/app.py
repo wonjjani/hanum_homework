@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, redirect, url_for
 import pymysql
 
 app = Flask(__name__)
-db = pymysql.connect(host="localhost", user="root", passwd="8947", db="posts_postid", charset="utf8")
+db = pymysql.connect(host="localhost", user="root", passwd="", db="posts_postid", charset="utf8")
 cur = db.cursor()
 
 @app.route('/posts/<int:postId>', methods=['GET'])
